@@ -11,8 +11,17 @@ const islandNameElement = document.getElementById('islandName');
 
 // Search islands by name 
 function searchByName(islands, name) {
-    return islands.filter(island => island.name.toLowerCase().includes(name.toLowerCase()));
+    return islands.myFilter(island => island.name.toLowerCase().includes(name.toLowerCase()));
 }
+Array.prototype.myFilter = function(callback) {
+    const result = [];
+    for (let i = 0; i < this.length; i++) {
+      if (callback(this[i], i, this)) {
+        result.push(this[i]);
+      }
+    }
+    return result;
+};
 
 // function to trigger when the search button is clicked
 function search() {
@@ -40,13 +49,35 @@ function search() {
     // Function to combine HTML strings
     const combineHtml = (html, islandHtml) => html + islandHtml;
 
+    // self-created map function
+    Array.prototype.myMap = function(callback) {
+        const result = [];
+        for (let i = 0; i < this.length; i++) {
+        result.push(callback(this[i], i, this));
+        }
+        return result;
+    };
+    
+    // self-created reduce function
+    Array.prototype.myReduce = function(callback, initialValue) {
+        let accumulator = initialValue === undefined ? this[0] : initialValue;
+        let startIndex = initialValue === undefined ? 1 : 0;
+    
+        for (let i = startIndex; i < this.length; i++) {
+        accumulator = callback(accumulator, this[i], i, this);
+        }
+    
+        return accumulator;
+    };
+  
+
     // Pipe function (or compose)
     const pipe = (...fns) => (x) => fns.reduce((v, f) => f(v), x);
 
     // Main function to generate the complete HTML and insert it into the DOM
     const generateHtml = pipe(
-        (islands) => islands.map(islandToHtml),
-        (htmlArray) => htmlArray.reduce(combineHtml, ''),
+        (islands) => islands.myMap(islandToHtml),
+        (htmlArray) => htmlArray.myReduce(combineHtml, ''),
         (html) => {
             document.getElementById('islands-container').innerHTML = html;
             return html;
