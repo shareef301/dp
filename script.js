@@ -59,9 +59,9 @@ function search() {
     };
     
     // self-created reduce function
-    Array.prototype.myReduce = function(callback, initialValue) {
-        let accumulator = initialValue === undefined ? this[0] : initialValue;
-        let startIndex = initialValue === undefined ? 1 : 0;
+    Array.prototype.myReduce = function(callback) {
+        let accumulator = this[0];
+        let startIndex = 1;
     
         for (let i = startIndex; i < this.length; i++) {
         accumulator = callback(accumulator, this[i], i, this);
